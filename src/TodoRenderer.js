@@ -2,6 +2,15 @@ export class TodoRenderer {
 
   constructor(containerId) {
     this.container = document.getElementById(containerId);
+
+    this.actions = {
+      onToggle() {},
+      onDelete() {}
+    };
+  }
+
+  bindActions(actions) {
+    this.actions = actions;
   }
 
   render(tasks, service) {
@@ -13,23 +22,28 @@ export class TodoRenderer {
       html += this.buildTaskRow(task);
     }
 
-    this.container.innerHTML = html;
-
+this.container.innerHTML = `
+    <p>${service.getWorkloadSummary()}</p>
+    ${html}
+`;
     const buttons = this.container.querySelectorAll("[data-toggle]");
 
     for (const button of buttons) {
       button.addEventListener("click", () => {
-        service.toggleComplete(Number(button.dataset.toggle));
-        this.render(service.tasks, service);
+        this.actions.onToggle(
+          Number(button.dataset.toggle)
+        );
       });
     }
 
-    const deleteButtons = this.container.querySelectorAll("[data-delete]");
+    const deleteButtons =
+      this.container.querySelectorAll("[data-delete]");
 
-    for (const button of deleteButtons) {
-      button.addEventListener("click", () => {
-        service.deleteTask(Number(button.dataset.delete));
-        this.render(service.tasks, service);
+    for (const btn of deleteButtons) {
+      btn.addEventListener("click", () => {
+        this.actions.onDelete(
+          Number(btn.dataset.delete)
+        );
       });
     }
   }
@@ -39,10 +53,14 @@ export class TodoRenderer {
       <li data-row="${task.id}">
         <span>${task.desc}</span>
         <span>${task.createdAt}</span>
+
         <button data-toggle="${task.id}">
           ${task.completed ? "Undo" : "Done"}
         </button>
-        <button data-delete="${task.id}">Delete</button>
+
+        <button data-delete="${task.id}">
+          Delete
+        </button>
       </li>
     `;
   }
