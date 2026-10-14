@@ -8,7 +8,7 @@ export class TodoRenderer {
     if (!this.container) return;
 
     let html = "";
-
+html += `<p class="status">${service.getWorkloadSummary()}</p>`;
     for (const task of tasks) {
       html += this.buildTaskRow(task);
     }
