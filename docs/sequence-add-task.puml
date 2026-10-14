@@ -1,14 +1,22 @@
-@startuml AddTask
-actor User
-participant TodoList
-participant Storage
 
-User -> TodoList : add("Buy milk")
-activate TodoList
-TodoList -> Storage : save(items)
-activate Storage
-Storage --> TodoList : ok
-deactivate Storage
-TodoList --> User : re-render
-deactivate TodoList
+@startuml
+actor User
+participant Main
+participant TodoController
+participant TodoService
+participant LocalStorageHandler
+participant TodoRenderer
+
+User -> Main : Click Add
+Main -> TodoController : addTask(description, type)
+TodoController -> TodoService : addTask(description, type)
+TodoService -> TodoService : Validate description
+TodoService -> TodoService : Create task
+TodoService -> LocalStorageHandler : save(tasks)
+LocalStorageHandler --> TodoService : Saved
+TodoService --> TodoController : Return task
+TodoController -> TodoRenderer : render(tasks, service)
+TodoRenderer --> TodoController : Render complete
+TodoController --> Main : Return task
+Main --> User : Clear input
 @enduml

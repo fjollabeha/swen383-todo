@@ -1,16 +1,34 @@
-@startuml ClassDiagram
-class TodoList {
-  - items: Task[]
-  + add(t: Task)
-  + remove(id)
+
+@startuml
+class TodoService {
+  - storage
+  - tasks
+  + addTask(description, type)
+  + toggleComplete(id)
+  + deleteTask(id)
+  + getWorkloadSummary()
 }
 
-class Task {
-  - title: String
-  - done: boolean
-  + complete()
+class LocalStorageHandler {
+  + load()
+  + save(tasks)
 }
 
-TodoList *-- "0..*" Task : owns
-TodoList ..> Storage : uses
+class TodoRenderer {
+  - container
+  + render(tasks, service)
+  + buildTaskRow(task)
+}
+
+class TodoController {
+  - service
+  - renderer
+  + start()
+  + addTask(description, type)
+}
+
+TodoService --> LocalStorageHandler : uses
+TodoRenderer --> TodoService : reads tasks
+TodoController --> TodoService : coordinates
+TodoController --> TodoRenderer : coordinates
 @enduml
