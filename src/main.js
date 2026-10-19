@@ -1,12 +1,13 @@
 import { TodoService } from "./TodoService.js";
 import { TodoRenderer } from "./TodoRenderer.js";
-import { LocalStorageHandler } from "./LocalStorageHandler.js";
+import { StorageFactory } from "./StorageFactory.js";
+import { TodoController } from "./TodoController.js";
 
 window.addEventListener("DOMContentLoaded", () => {
 
-  const storage = new LocalStorageHandler();
-  const service = new TodoService(storage);
-  const renderer = new TodoRenderer("task-container");
+const storage = StorageFactory.createStorage("local");
+const service = new TodoService(storage);
+const renderer = new TodoRenderer("task-container");
 
   renderer.render(service.tasks, service);
 
