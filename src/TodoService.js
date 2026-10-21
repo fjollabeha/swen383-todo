@@ -1,25 +1,6 @@
-function createNormalTask(description) {
-  return {
-    id: Date.now(),
-    desc: description,
-    completed: false,
-    priority: "normal",
-    createdAt: new Date().toLocaleTimeString()
-  };
-}
-
-function createUrgentTask(description) {
-  return {
-    id: Date.now(),
-    desc: `[URGENT] ${description}`,
-    completed: false,
-    priority: "high",
-    createdAt: new Date().toLocaleTimeString()
-  };
-}
+import { TaskBuilder } from "./TaskBuilder.js";
 
 export class TodoService {
-
   constructor(storage) {
     this.storage = storage;
     this.tasks = this.storage.load();
@@ -33,10 +14,15 @@ export class TodoService {
       return false;
     }
 
-    const task =
-      type === "urgent"
-        ? createUrgentTask(trimmed)
-        : createNormalTask(trimmed);
+    const builder = new TaskBuilder(trimmed);
+
+    if (type === "urgent") {
+      builder
+        .setPriority("high")
+        .setDescription(`[URGENT] ${trimmed}`);
+    }
+
+    const task = builder.build();
 
     this.tasks.push(task);
     this.storage.save(this.tasks);
@@ -57,5 +43,4 @@ export class TodoService {
     this.tasks = this.tasks.filter(t => t.id !== id);
     this.storage.save(this.tasks);
   }
-
 }
